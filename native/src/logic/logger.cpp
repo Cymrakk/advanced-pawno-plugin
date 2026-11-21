@@ -9,7 +9,12 @@
 #include <cstdio>
 #include <cstring>
 #include <ctime>
-#include <filesystem>
+#ifdef _WIN32
+    #include <windows.h>
+#else
+    #include <sys/stat.h>
+    #include <sys/types.h>
+#endif
 #include <fstream>
 #include <string>
 
@@ -20,6 +25,24 @@ typedef void (*logprintf_t)(const char* format, ...);
 extern logprintf_t logprintf;
 
 static AMX_NATIVE pfn_format = nullptr;
+
+static void EnsureDirectories(const std::string& file_path)
+{
+    size_t pos = 0;
+    while ((pos = file_path.find_first_of("/\\", pos)) != std::string::npos)
+    {
+        std::string dir = file_path.substr(0, pos);
+        if (!dir.empty())
+        {
+        #ifdef _WIN32
+            CreateDirectoryA(dir.c_str(), nullptr);
+        #else
+            mkdir(dir.c_str(), 0755);
+        #endif
+        }
+        pos++;
+    }
+}
 
 // native SendLog(const file[], type = LOG_TYPE_INFO, bool:console = true, const fmat[], {Float, bool, _}:...);
 cell AMX_NATIVE_CALL n_SendLog(AMX* amx, cell* params)
@@ -85,18 +108,14 @@ cell AMX_NATIVE_CALL n_SendLog(AMX* amx, cell* params)
 
     try
     {
-        std::filesystem::path p(file_path);
-        if (p.has_parent_path())
-        {
-            std::filesystem::create_directories(p.parent_path());
-        }
+        EnsureDirectories(file_path);
 
-        std::ofstream out(p, std::ios::app);
+        std::ofstream out(file_path, std::ios::app);
         if (!out.is_open()) return 0;
 
         std::time_t now = std::time(nullptr);
         std::tm* tm_info = std::localtime(&now);
-        char time_buf[ 32 ];
+        char time_buf[32]; // <-- проверь, что здесь [32]
         std::strftime(time_buf, sizeof(time_buf), "[%d.%m.%Y %H:%M:%S] ", tm_info);
 
         out << time_buf << prefix << message << '\n';
@@ -109,3 +128,4 @@ cell AMX_NATIVE_CALL n_SendLog(AMX* amx, cell* params)
 
     return 1;
 }
+
