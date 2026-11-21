@@ -1,5 +1,5 @@
-// AdvancedPawno Plugin (APP) | Source Code
-// main.cpp  |  made by Cymrakk
+// AdvancedPawno Plugin | Source Code
+// main.cpp | made by Cymrakk
 // GitHub: https://github.com/Cymrakk/advanced-pawno-plugin
 // License: MIT
 
@@ -31,7 +31,7 @@ AMX_NATIVE FindNative(AMX* amx, const char* name)
 // native SendClientFormatMessage(playerid, color, const fmat[], {Float, bool, _}:...);
 cell AMX_NATIVE_CALL n_SendClientFormatMessage(AMX* amx, cell* params)
 {
-    int num_args = params / sizeof(cell);
+    int num_args = params[0] / sizeof(cell);
     if (num_args < 3) return 0;
 
     if (!pfn_format) pfn_format = FindNative(amx, "format");
@@ -40,21 +40,21 @@ cell AMX_NATIVE_CALL n_SendClientFormatMessage(AMX* amx, cell* params)
 
     if (num_args == 3)
     {
-        cell scm_params = { 3 * sizeof(cell), params, params, params };
+        cell scm_params[] = { 3 * sizeof(cell), params[1], params[2], params[3] };
         return pfn_SendClientMessage(amx, scm_params);
     }
 
     cell amx_addr = 0, *phys_addr = nullptr;
     amx_Allot(amx, 144, &amx_addr, &phys_addr);
 
-    cell fmt_params;
+    cell fmt_params[64];
     int fmt_count = num_args;
     if (fmt_count > 63) fmt_count = 63;
 
-    fmt_params = fmt_count * sizeof(cell);
-    fmt_params = amx_addr;      // output[]
-    fmt_params = 144;           // len
-    fmt_params = params;     // const format[]
+    fmt_params[0] = fmt_count * sizeof(cell);
+    fmt_params[1] = amx_addr;      // output[]
+    fmt_params[2] = 144;           // len
+    fmt_params[3] = params[3];     // const format[]
 
     for (int i = 4; i <= num_args && i <= 63; i++)
     {
@@ -63,7 +63,7 @@ cell AMX_NATIVE_CALL n_SendClientFormatMessage(AMX* amx, cell* params)
 
     pfn_format(amx, fmt_params);
 
-    cell scm_params = { 3 * sizeof(cell), params, params, amx_addr };
+    cell scm_params[] = { 3 * sizeof(cell), params[1], params[2], amx_addr };
     cell ret = pfn_SendClientMessage(amx, scm_params);
 
     amx_Release(amx, amx_addr);
@@ -73,7 +73,7 @@ cell AMX_NATIVE_CALL n_SendClientFormatMessage(AMX* amx, cell* params)
 // native SendClientFormatMessageToAll(color, const fmat[], {Float, bool, _}:...);
 cell AMX_NATIVE_CALL n_SendClientFormatMessageToAll(AMX* amx, cell* params)
 {
-    int num_args = params / sizeof(cell);
+    int num_args = params[0] / sizeof(cell);
     if (num_args < 2) return 0;
 
     if (!pfn_format) pfn_format = FindNative(amx, "format");
@@ -82,21 +82,21 @@ cell AMX_NATIVE_CALL n_SendClientFormatMessageToAll(AMX* amx, cell* params)
 
     if (num_args == 2)
     {
-        cell scm_params = { 2 * sizeof(cell), params, params };
+        cell scm_params[] = { 2 * sizeof(cell), params[1], params[2] };
         return pfn_SendClientMessageToAll(amx, scm_params);
     }
 
     cell amx_addr = 0, *phys_addr = nullptr;
     amx_Allot(amx, 144, &amx_addr, &phys_addr);
 
-    cell fmt_params;
+    cell fmt_params[64];
     int fmt_count = num_args + 1;
     if (fmt_count > 63) fmt_count = 63;
 
-    fmt_params = fmt_count * sizeof(cell);
-    fmt_params = amx_addr;
-    fmt_params = 144;
-    fmt_params = params;
+    fmt_params[0] = fmt_count * sizeof(cell);
+    fmt_params[1] = amx_addr;
+    fmt_params[2] = 144;
+    fmt_params[3] = params[2];
 
     for (int i = 3; i <= num_args && i <= 62; i++)
     {
@@ -105,7 +105,7 @@ cell AMX_NATIVE_CALL n_SendClientFormatMessageToAll(AMX* amx, cell* params)
 
     pfn_format(amx, fmt_params);
 
-    cell scm_params = { 2 * sizeof(cell), params, amx_addr };
+    cell scm_params[] = { 2 * sizeof(cell), params[1], amx_addr };
     cell ret = pfn_SendClientMessageToAll(amx, scm_params);
 
     amx_Release(amx, amx_addr);
