@@ -10,6 +10,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 include_directories(
+    ${CMAKE_SOURCE_DIR}/native
     ${CMAKE_SOURCE_DIR}/native/src
     ${CMAKE_SOURCE_DIR}/native/SDK
     ${CMAKE_SOURCE_DIR}/native/SDK/amx
