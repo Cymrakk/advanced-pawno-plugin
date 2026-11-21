@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(advancedpawno)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(UNIX AND NOT APPLE)
     add_definitions(-DLINUX -D_GNU_SOURCE)
@@ -22,6 +23,7 @@ set(SOURCES
     native/src/main.cpp
     native/src/logic/utils.cpp
     native/src/logic/messages.cpp
+    native/src/logic/logger.cpp
     native/SDK/amxplugin.cpp
 )
 
@@ -33,5 +35,5 @@ add_library(advancedpawno SHARED ${SOURCES})
 set_target_properties(advancedpawno PROPERTIES PREFIX "")
 
 if(UNIX AND NOT APPLE)
-    target_link_libraries(advancedpawno dl)
+    target_link_libraries(advancedpawno dl stdc++fs)
 endif()
