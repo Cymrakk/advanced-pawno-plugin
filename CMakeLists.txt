@@ -11,13 +11,13 @@ endif()
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/native/src
-    ${CMAKE_SOURCE_DIR}/native/src/SDK
-    ${CMAKE_SOURCE_DIR}/native/src/SDK/amx
+    ${CMAKE_SOURCE_DIR}/native/SDK
+    ${CMAKE_SOURCE_DIR}/native/SDK/amx
 )
 
 set(SOURCES
     native/src/main.cpp
-    native/src/SDK/amxplugin.cpp
+    native/SDK/amxplugin.cpp
 )
 
 if(WIN32)
