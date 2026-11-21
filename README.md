@@ -1,1 +1,1 @@
-# advanced-pawno-plugin
+# AdvancedPawno Plugin (AdvPawno)
