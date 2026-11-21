@@ -5,15 +5,16 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-#include "logger.h"
-#include "utils.h"
-
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
 #include <filesystem>
 #include <fstream>
 #include <string>
+
+#include "logger.h"
+#include "utils.h"
 
 typedef void (*logprintf_t)(const char* format, ...);
 extern logprintf_t logprintf;
@@ -26,7 +27,6 @@ cell AMX_NATIVE_CALL n_SendLog(AMX* amx, cell* params)
     int num_args = params[ 0 ] / sizeof(cell);
     if (num_args < 4) return 0;
 
-    // 1. Получаем путь к файлу
     char file_path[ 256 ];
     cell* phys_file = nullptr;
     amx_GetAddr(amx, params[ 1 ], &phys_file);
@@ -35,7 +35,6 @@ cell AMX_NATIVE_CALL n_SendLog(AMX* amx, cell* params)
     if (strlen(file_path) == 0 || strstr(file_path, "..") != nullptr)
         return 0;
 
-    // 2. Тип лога и флаг вывода в консоль
     int type = static_cast<int>(params[ 2 ]);
     bool to_console = (params[ 3 ] != 0);
 
@@ -43,7 +42,6 @@ cell AMX_NATIVE_CALL n_SendLog(AMX* amx, cell* params)
     if (type == 1) prefix = "[WARNING] ";
     else if (type == 2) prefix = "[ERROR] ";
 
-    // 3. Форматируем строку
     char message[ 1024 ];
 
     if (num_args == 4)
@@ -66,9 +64,9 @@ cell AMX_NATIVE_CALL n_SendLog(AMX* amx, cell* params)
         if (fmt_count > 63) fmt_count = 63;
 
         fmt_params[ 0 ] = fmt_count * sizeof(cell);
-        fmt_params[ 1 ] = amx_addr;      // output[]
-        fmt_params[ 2 ] = 1024;          // len
-        fmt_params[ 3 ] = params[ 4 ];   // const fmat[]
+        fmt_params[ 1 ] = amx_addr;
+        fmt_params[ 2 ] = 1024;
+        fmt_params[ 3 ] = params[ 4 ];
 
         for (int i = 5; i <= num_args && (i - 1) <= 63; i++)
         {
@@ -80,13 +78,11 @@ cell AMX_NATIVE_CALL n_SendLog(AMX* amx, cell* params)
         amx_Release(amx, amx_addr);
     }
 
-    // 4. Вывод в консоль сервера
     if (to_console && logprintf)
     {
         logprintf("%s%s", prefix, message);
     }
 
-    // 5. Автоматическое создание папок и запись в файл
     try
     {
         std::filesystem::path p(file_path);
