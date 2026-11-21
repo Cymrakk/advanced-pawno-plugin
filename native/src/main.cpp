@@ -2,10 +2,10 @@
 // main.cpp | made by Cymrakk
 // GitHub: https://github.com/Cymrakk/advanced-pawno-plugin
 // License: MIT
-
 #include "SDK/amx/amx.h"
 #include "SDK/plugincommon.h"
 #include "logic/messages.h"
+#include "logic/logger.h"
 
 typedef void (*logprintf_t)(const char* format, ...);
 logprintf_t logprintf;
@@ -15,6 +15,7 @@ AMX_NATIVE_INFO PluginNatives[] =
 {
     { "SendClientFormatMessage", n_SendClientFormatMessage },
     { "SendClientFormatMessageToAll", n_SendClientFormatMessageToAll },
+    { "SendLog", n_SendLog },
     { 0, 0 }
 };
 
