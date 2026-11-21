@@ -37,5 +37,5 @@ add_library(advancedpawno SHARED ${SOURCES})
 set_target_properties(advancedpawno PROPERTIES PREFIX "")
 
 if(UNIX AND NOT APPLE)
-    target_link_libraries(advancedpawno dl stdc++fs)
+    target_link_libraries(advancedpawno dl)
 endif()
