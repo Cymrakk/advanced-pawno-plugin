@@ -1,0 +1,52 @@
+name: Build AdvancedPawno
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure CMake (Win32)
+        run: cmake -B build -A Win32
+
+      - name: Build Windows DLL
+        run: cmake --build build --config Release
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AdvancedPawno-Windows
+          path: |
+            build/Release/advancedpawno.dll
+            include/AdvancedPawno.inc
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install 32-bit compiler libraries
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y g++-multilib cmake
+
+      - name: Configure CMake (Linux x86)
+        run: cmake -B build
+
+      - name: Build Linux SO
+        run: cmake --build build --config Release
+
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AdvancedPawno-Linux
+          path: |
+            build/advancedpawno.so
+            include/AdvancedPawno.inc
