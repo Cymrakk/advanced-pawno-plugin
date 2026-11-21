@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(advancedpawno)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 if(UNIX AND NOT APPLE)
     add_definitions(-DLINUX -D_GNU_SOURCE)
@@ -13,12 +13,15 @@ endif()
 include_directories(
     ${CMAKE_SOURCE_DIR}/native
     ${CMAKE_SOURCE_DIR}/native/src
+    ${CMAKE_SOURCE_DIR}/native/src/logic
     ${CMAKE_SOURCE_DIR}/native/SDK
     ${CMAKE_SOURCE_DIR}/native/SDK/amx
 )
 
 set(SOURCES
     native/src/main.cpp
+    native/src/logic/utils.cpp
+    native/src/logic/messages.cpp
     native/SDK/amxplugin.cpp
 )
 
