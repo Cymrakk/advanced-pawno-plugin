@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(advancedpawno)
 
+add_definitions(-DHAVE_STDINT_H)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
